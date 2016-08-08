@@ -1,7 +1,7 @@
 ---
 - include: check_vars.yml
 
-- include: install.yml
+- include: install_from_source.yml
 
 - include: server.yml
   when: not redis_sentinel
