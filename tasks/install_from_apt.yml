@@ -1,11 +1,11 @@
 - assert: { that: "ansible_os_family == 'Debian'" }
 
 - name: install start-stop-daemon
-  apt: pkg=daemon state=present update_cache=yes
+  apt: pkg=daemon state=present update_cache=yes cache_valid_time=3600
   sudo: yes
 
 - name: install redis
-  apt: pkg={{redis_apt_package}} state=present update_cache=yes
+  apt: pkg={{redis_apt_package}} state=present update_cache=yes cache_valid_time=3600
   sudo: yes
 
 # disable the default apt configured init.d redis service
