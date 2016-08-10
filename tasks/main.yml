@@ -1,7 +1,12 @@
 ---
 - include: check_vars.yml
+  when: redis_install_method == "source"
 
 - include: install_from_source.yml
+  when: redis_install_method == "source"
+
+- include: install_from_apt.yml
+  when: redis_install_method == "apt"
 
 - include: server.yml
   when: not redis_sentinel
