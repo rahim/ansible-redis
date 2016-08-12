@@ -1,0 +1,25 @@
+- assert: { that: "ansible_os_family == 'Debian'" }
+
+- name: install start-stop-daemon
+  apt: pkg=daemon state=present update_cache=yes cache_valid_time=3600
+  sudo: yes
+
+- name: install redis
+  apt: pkg={{redis_apt_package}} state=present update_cache=yes cache_valid_time=3600
+  sudo: yes
+
+# disable the default apt configured init.d redis service
+- name: disable default redis service
+  sudo: true
+  service: name=redis-server enabled=no state=stopped
+
+# Checking version from whichever redis-cli happens to be in PATH is weak, but
+# keeps things simple
+- name: verify installed redis version
+  shell: redis-cli --version | awk '{print $2}'
+  register: redis_verified_version
+
+- name: reflect apt fixed config as facts
+  set_fact:
+    redis_install_dir: /usr
+    redis_version: "{{ redis_verified_version.stdout }}"

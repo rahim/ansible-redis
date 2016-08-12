@@ -34,7 +34,14 @@ case "$1" in
         else
                 PID=$(cat $PIDFILE)
                 echo "Stopping ..."
-                $CLIEXEC -p $SENTINEL_PORT -h $BIND_ADDRESS shutdown
+
+                {% if redis_sentinel_supports_shutdown_cmd -%}
+                  # this is safer than SIGTERM, but only supported from 2.8.6 onwards
+                  $CLIEXEC -p $SENTINEL_PORT -h $BIND_ADDRESS shutdown
+                {% else  -%}
+                  kill $PID
+                {% endif  -%}
+
                 while [ -x /proc/${PID} ]
                 do
                     echo "Waiting for Redis Sentinel to shutdown ..."
