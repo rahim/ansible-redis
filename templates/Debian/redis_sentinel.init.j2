@@ -67,7 +67,14 @@ case "$1" in
         if [ -f "$PIDFILE" ]; then
             PID=$(cat "$PIDFILE")
             log_daemon_msg "Stopping $NAME..."
-            $CLIEXEC shutdown
+
+            {% if redis_sentinel_supports_shutdown_cmd -%}
+              # this is safer than SIGTERM, but only supported from 2.8.6 onwards
+              $CLIEXEC shutdown
+            {% else  -%}
+              kill $PID
+            {% endif  -%}
+
             while [ -x /proc/${PID} ]; do
                 log_daemon_msg "Waiting for Redis Sentinel to shutdown ..."
                 sleep 1

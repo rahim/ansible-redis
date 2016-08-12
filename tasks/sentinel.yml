@@ -6,6 +6,10 @@
     recurse: yes
     owner: "{{ redis_user }}"
 
+- name: determine whether sentinel version supports shutdown
+  set_fact:
+    redis_sentinel_supports_shutdown_cmd: "{{ redis_version | version_compare('2.8.6', 'ge') }}"
+
 - name: create sentinel init script
   template:
     src: "{{ item }}"
