@@ -13,8 +13,13 @@
   sudo: true
   service: name=redis-server enabled=no state=stopped
 
-# TODO: write/update redis ansible vars that are potentially invalidated by apt
+# Checking version from whichever redis-cli happens to be in PATH is weak, but
+# keeps things simple
+- name: verify installed redis version
+  shell: redis-cli --version | awk '{print $2}'
+  register: redis_verified_version
 
 - name: reflect apt fixed config as facts
   set_fact:
     redis_install_dir: /usr
+    redis_version: "{{ redis_verified_version.stdout }}"
